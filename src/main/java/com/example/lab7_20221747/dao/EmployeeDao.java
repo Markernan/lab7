@@ -109,6 +109,6 @@ public class EmployeeDao {
     }
 
     public int getNextEmployeeId() {
-
+    private objeto = new objeto();
     }
 }
