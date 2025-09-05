@@ -118,5 +118,8 @@ public class EmployeeServlet extends HttpServlet {
     //todavia no nos enseñan a eliminar
 }
 
-
+    private Date parseDate(String dateStr) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.parse(dateStr);
+    }
 }
