@@ -1,4 +1,9 @@
 
+
+import java.sql.*;
+import java.util.*;
+import com.example.lab7_20221747.model.Employee;
+
 public class EmployeeDao {
     private String url = "jdbc:mysql://localhost:3306/employees";
     private String user = "root";
@@ -7,11 +12,9 @@ public class EmployeeDao {
     public List<Employee> getAllEmployees() {
         List<Employee> employees = new ArrayList<>();
         String sql = "SELECT * FROM employees ORDER BY emp_no DESC";
-
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-
             while (rs.next()) {
                 Employee emp = new Employee();
                 emp.setEmpNo(rs.getInt("emp_no"));
@@ -31,13 +34,10 @@ public class EmployeeDao {
     public Employee getEmployeeById(int empNo) {
         String sql = "SELECT * FROM employees WHERE emp_no = ?";
         Employee emp = null;
-
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setInt(1, empNo);
             ResultSet rs = pstmt.executeQuery();
-
             if (rs.next()) {
                 emp = new Employee();
                 emp.setEmpNo(rs.getInt("emp_no"));
@@ -48,25 +48,22 @@ public class EmployeeDao {
                 emp.setHireDate(rs.getDate("hire_date"));
             }
         } catch (SQLException e) {
+            e.printStackTrace();
         }
         return emp;
     }
 
     public int createEmployee(Employee emp) {
-        String sql = "INSERT INTO employees (emp_no, birth_date, first_name, last_name, gender, hire_date) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO employees (emp_no, birth_date, first_name, last_name, gender, hire_date) VALUES (?, ?, ?, ?, ?, ?)";
         int result = 0;
-
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setInt(1, emp.getEmpNo());
             pstmt.setDate(2, new java.sql.Date(emp.getBirthDate().getTime()));
             pstmt.setString(3, emp.getFirstName());
             pstmt.setString(4, emp.getLastName());
             pstmt.setString(5, emp.getGender());
             pstmt.setDate(6, new java.sql.Date(emp.getHireDate().getTime()));
-
             result = pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -75,17 +72,16 @@ public class EmployeeDao {
     }
 
     public int updateEmployee(Employee emp) {
-
+        String sql = "UPDATE employees SET birth_date=?, first_name=?, last_name=?, gender=?, hire_date=? WHERE emp_no=?";
+        int result = 0;
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setDate(1, new java.sql.Date(emp.getBirthDate().getTime()));
             pstmt.setString(2, emp.getFirstName());
             pstmt.setString(3, emp.getLastName());
             pstmt.setString(4, emp.getGender());
             pstmt.setDate(5, new java.sql.Date(emp.getHireDate().getTime()));
             pstmt.setInt(6, emp.getEmpNo());
-
             result = pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -96,10 +92,8 @@ public class EmployeeDao {
     public int deleteEmployee(int empNo) {
         String sql = "DELETE FROM employees WHERE emp_no=?";
         int result = 0;
-
         try (Connection conn = DriverManager.getConnection(url, user, pass);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setInt(1, empNo);
             result = pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -109,6 +103,17 @@ public class EmployeeDao {
     }
 
     public int getNextEmployeeId() {
-    private objeto = new objeto();
+        String sql = "SELECT MAX(emp_no) AS max_id FROM employees";
+        int nextId = 1;
+        try (Connection conn = DriverManager.getConnection(url, user, pass);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                nextId = rs.getInt("max_id") + 1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return nextId;
     }
 }
